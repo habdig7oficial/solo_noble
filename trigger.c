@@ -21,15 +21,21 @@ int main(){
 
     board[DIMENSIONS / 2].row[DIMENSIONS / 2] = true;
 
+    /* Prepare miscellanious */
+    FILE *log;
+    log = open_log(log);
+
+
     /* Start programs logic */
 
-    char *str = draw_board(board, DIMENSIONS);
-    printf("%s", str);
-    free(str);
-    
+    char *draw = (char *) malloc(calc_draw(DIMENSIONS));
+    dprint(draw_board(board, DIMENSIONS, draw), log);
+
     /* Free all memory */
 
     free_board(board, DIMENSIONS);
+    free(draw);
+    fclose(log);
 
     return 0;
 }

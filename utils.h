@@ -1,6 +1,7 @@
 #include "string.h"
+#include "time.h"
 
-
+#define CHAR_NAME 30
 #define DIMENSIONS 7
 
 struct Board {
@@ -33,11 +34,12 @@ int make_normal_row(struct Board board[], int len){
     return stop_at;
 }
 
-char *draw_board(struct Board board[], int total_len){
+int calc_draw(int total_len){
+    return (total_len * total_len + total_len + 1) * sizeof(char);
+}
 
-    char terminator[] = "____________\n";
-    
-    char *str = (char *) malloc(total_len * sizeof(char) + total_len + 1 + sizeof(terminator));
+char *draw_board(struct Board board[], int total_len, char *str){
+    //char *str = (char *) malloc(total_len * sizeof(char) + total_len + 1 + sizeof(terminator));
     int i_str = 0;
     for(int i = 0; i < total_len; i++, i_str++){
         for(int k = 0; k < board[i].offset; k++, i_str++)
@@ -49,12 +51,28 @@ char *draw_board(struct Board board[], int total_len){
         str[i_str] = '\n';
     }
     str[i_str] = '\0';
-
-    strcpy(&str[i_str], terminator);
     return str;
 }
 
 void free_board(struct Board board[], int len){
     for(int i = 0; i < len; i++)
         free(board[i].row);
+}
+
+FILE *open_log(FILE *log){
+    time_t now;
+    time(&now);
+
+    char name[CHAR_NAME];
+    
+    sprintf(name, "./log/log_%ld.txt", (long) now);
+
+    log = fopen(name, "w");
+
+    return log;
+}
+
+void dprint(char *msg, FILE *log){
+    printf("%s", msg);
+    fprintf(log, "%s", msg);
 }

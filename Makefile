@@ -3,3 +3,6 @@ compile:
 
 run: compile
 	./trigger
+
+check: compile
+	valgrind --leak-check=full ./trigger
