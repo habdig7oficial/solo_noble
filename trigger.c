@@ -19,11 +19,13 @@ int main(){
 
     int inner_len = make_min_row(&board[skip], DIMENSIONS);
 
+    board[DIMENSIONS / 2].row[DIMENSIONS / 2] = true;
 
     /* Start programs logic */
 
-    printf("%s", draw_board(board, DIMENSIONS));
-
+    char *str = draw_board(board, DIMENSIONS);
+    printf("%s", str);
+    free(str);
     
     /* Free all memory */
 

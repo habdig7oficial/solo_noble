@@ -1,3 +1,5 @@
+#include "string.h"
+
 
 #define DIMENSIONS 7
 
@@ -32,20 +34,23 @@ int make_normal_row(struct Board board[], int len){
 }
 
 char *draw_board(struct Board board[], int total_len){
-    
-    char *str = (char *) malloc(total_len * sizeof(char) + total_len + 1);
 
+    char terminator[] = "____________\n";
+    
+    char *str = (char *) malloc(total_len * sizeof(char) + total_len + 1 + sizeof(terminator));
     int i_str = 0;
     for(int i = 0; i < total_len; i++, i_str++){
         for(int k = 0; k < board[i].offset; k++, i_str++)
             str[i_str] = ' ';
             
         for(int j = 0; j < board[i].len; j++, i_str++)
-           str[i_str] = board[i].row[j]? 'o': '_';
+           str[i_str] = board[i].row[j]? 'o': '-';
         
         str[i_str] = '\n';
     }
-    printf("%d\n",i_str);
+    str[i_str] = '\0';
+
+    strcpy(&str[i_str], terminator);
     return str;
 }
 
