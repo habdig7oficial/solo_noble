@@ -4,6 +4,13 @@
 #define CHAR_NAME 30
 #define DIMENSIONS 7
 
+#define AXIS_Y true
+#define AXIS_X false
+
+#define FORWARD true
+#define BACKWARD false
+
+/* Make Board */
 struct Board {
     bool *row;
     int len;
@@ -59,6 +66,9 @@ void free_board(struct Board board[], int len){
         free(board[i].row);
 }
 
+
+/* Handle FILE */
+
 FILE *open_log(FILE *log){
     time_t now;
     time(&now);
@@ -76,3 +86,4 @@ void dprint(char *msg, FILE *log){
     printf("%s", msg);
     fprintf(log, "%s", msg);
 }
+

@@ -26,10 +26,17 @@ int main(){
     log = open_log(log);
 
 
-    /* Start programs logic */
+    /* Start program logic */
 
     char *draw = (char *) malloc(calc_draw(DIMENSIONS));
-    dprint(draw_board(board, DIMENSIONS, draw), log);
+
+    for(int i = 0; i < DIMENSIONS; i++){
+        for(int j = 0; board[i].len; j++){
+            board[i].row[j] = !board[i].row[j];
+            dprint(draw_board(board, DIMENSIONS, draw), log);
+            dprint("\n:::::::::::::::\n\n", log);
+        }
+    }
 
     /* Free all memory */
 
