@@ -31,10 +31,9 @@ int main(){
     char *draw = (char *) malloc(calc_draw(DIMENSIONS));
 
     for(int i = 0; i < DIMENSIONS; i++){
-        for(int j = 0; board[i].len; j++){
+        for(int j = 0; j < board[i].len; j++){
             board[i].row[j] = !board[i].row[j];
             dprint(draw_board(board, DIMENSIONS, draw), log);
-            dprint("\n:::::::::::::::\n\n", log);
         }
     }
 

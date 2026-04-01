@@ -87,3 +87,6 @@ void dprint(char *msg, FILE *log){
     fprintf(log, "%s", msg);
 }
 
+bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sense){
+
+}

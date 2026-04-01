@@ -2,3 +2,8 @@
     int skip = inner_len / 2 + total_len % 2;
     int holes = (inner_len * 2 * skip) + ((total_len - 2 * skip) * total_len);
     int padding = total_len + 1;
+
+
+    bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sense){
+
+}
