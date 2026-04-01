@@ -10,6 +10,9 @@
 #define FORWARD true
 #define BACKWARD false
 
+#define IS_EMPTY true
+#define NOT_EMPTY false
+
 /* Make Board */
 struct Board {
     bool *row;
@@ -53,7 +56,7 @@ char *draw_board(struct Board board[], int total_len, char *str){
             str[i_str] = ' ';
             
         for(int j = 0; j < board[i].len; j++, i_str++)
-           str[i_str] = board[i].row[j]? 'o': '-';
+           str[i_str] = board[i].row[j]? '-': 'x';
         
         str[i_str] = '\n';
     }
@@ -88,5 +91,43 @@ void dprint(char *msg, FILE *log){
 }
 
 bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sense){
+    short vsense = sense == FORWARD ? 2 : -2;
+    short vbefore = sense == FORWARD ? 1 : -1;
 
+    /* Precheck if position is in range*/
+    if(y >= total_len || x >= board[y].len)
+        return false;
+    else if(axis == AXIS_X && x + vsense >= board[y].len)
+        return false;
+    else if(axis == AXIS_Y && y + vsense >= total_len)
+        return false;
+
+    /* Check if tile is already empty */
+    else if(board[y].row[x] == IS_EMPTY)
+        return false;
+
+    /* Check if the destination is not empty */
+    else if(axis == AXIS_X && board[y].row[x + vsense] == NOT_EMPTY)
+        return false;
+    else if(axis == AXIS_Y && board[y + vsense].row[x] == NOT_EMPTY)
+        return false;
+
+    board[y].row[x] = IS_EMPTY;
+
+    if(axis == AXIS_X){
+        board[y].row[x + vsense] = NOT_EMPTY;
+        board[y].row[x + vbefore] = IS_EMPTY;
+    }
+        
+    else{
+        board[y + vsense].row[x] = NOT_EMPTY;
+        board[y + vbefore].row[x] = IS_EMPTY;
+    }
+        
+
+    board[y].row[x] = IS_EMPTY;
+
+
+    printf("(%d, %d) -> (%d, %d)\n", x, y, x + (axis == AXIS_X) ? vsense : 0, y + (axis == AXIS_Y) ? vsense : 0);
+    return true;
 }
