@@ -30,21 +30,20 @@ int main(){
 
     char *draw = (char *) malloc(calc_draw(DIMENSIONS));
 
-    bool m = move(board, DIMENSIONS, 1, 3, AXIS_X, FORWARD);
-    dprint(draw_board(board, DIMENSIONS, draw), log);
-    m = move(board, DIMENSIONS, 3, 3, AXIS_X, BACKWARD);
+    //solve(board, DIMENSIONS, draw, log);
 
-    printf("%d\n", m);
+    for(int i = 0; i < DIMENSIONS; i++)
+        for(int j = 0; j < board[i].len; j++)
+            board[i].row[j] = !board[i].row[j];
+
+    bool m = move(board, DIMENSIONS, 3, 3, AXIS_X, FORWARD);
+
+    
 
     /*
-    for(int i = 0; i < DIMENSIONS; i++){
-        for(int j = 0; j < board[i].len; j++){
-            //board[i].row[j] = !board[i].row[j];
-            dprint(draw_board(board, DIMENSIONS, draw), log);
-            dprint("\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n\n", log);
-        }
-    }
-*/
+
+    */
+
     dprint(draw_board(board, DIMENSIONS, draw), log);
 
     /* Free all memory */

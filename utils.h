@@ -91,8 +91,9 @@ void dprint(char *msg, FILE *log){
 }
 
 bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sense){
-    short vsense = sense == FORWARD ? 2 : -2;
-    short vbefore = sense == FORWARD ? 1 : -1;
+    short invy = (axis == AXIS_Y) ? -1 : 1;
+    short vsense = (sense == FORWARD ? 2 : -2)  * invy;
+    short vbefore = (sense == FORWARD ? 1 : -1) * invy;
 
     /* Precheck if position is in range*/
     if(y >= total_len || x >= board[y].len)
@@ -106,10 +107,15 @@ bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sen
     else if(board[y].row[x] == IS_EMPTY)
         return false;
 
+    int offset = 0;
+    if(axis == AXIS_Y)
+        offset = board[y].offset - board[y + vsense].offset;
+
+    
     /* Check if the destination is not empty */
-    else if(axis == AXIS_X && board[y].row[x + vsense] == NOT_EMPTY)
+    if(axis == AXIS_X && board[y].row[x + vsense] == NOT_EMPTY)
         return false;
-    else if(axis == AXIS_Y && board[y + vsense].row[x] == NOT_EMPTY)
+    else if(axis == AXIS_Y && board[y + vsense].row[x + offset] == NOT_EMPTY)
         return false;
 
     board[y].row[x] = IS_EMPTY;
@@ -118,16 +124,53 @@ bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sen
         board[y].row[x + vsense] = NOT_EMPTY;
         board[y].row[x + vbefore] = IS_EMPTY;
     }
-        
     else{
-        board[y + vsense].row[x] = NOT_EMPTY;
-        board[y + vbefore].row[x] = IS_EMPTY;
+        board[y + vsense].row[x + offset] = NOT_EMPTY;
+        board[y + vbefore].row[x + offset] = IS_EMPTY;
     }
-        
+
 
     board[y].row[x] = IS_EMPTY;
 
-
     printf("(%d, %d) -> (%d, %d)\n", x, y, x + (axis == AXIS_X) ? vsense : 0, y + (axis == AXIS_Y) ? vsense : 0);
     return true;
+}
+
+bool undo(struct Board board[], int total_len, int x, int y, bool axis, bool sense){
+
+}
+
+
+/* Backtracking function */
+
+bool solve(struct Board board[], int len, char *draw, FILE *log){
+    for(int i = 0; i < len; i++){
+        for(int j = 0; j < board[i].len; j++){
+            bool res;
+            bool save_state; 
+            
+            save_state = board[i].row[j + 1];
+            if(move(board, len, i, j, AXIS_X, FORWARD)){
+                // call recursive
+                move(board, len, i, j + 2, AXIS_X, BACKWARD);
+                board[i][j + 1] = save_state;
+            }
+            save_state = board[i][j - 1];
+            if(move(board, len, i, j, AXIS_X, BACKWARD)){
+
+            }
+
+            save_state = board[i + 1][j];
+            if(move(board, len, i, j, AXIS_Y, FORWARD)){
+
+            }
+            save_state = board[i - 1][j];
+            if(move(board, len, i, j, AXIS_Y, BACKWARD)){
+
+            }
+
+            dprint(draw_board(board, len, draw), log);
+            dprint("\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n\n", log);
+        }
+    }
 }
