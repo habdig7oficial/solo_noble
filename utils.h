@@ -96,11 +96,11 @@ bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sen
     short vbefore = (sense == FORWARD ? 1 : -1) * invy;
 
     /* Precheck if position is in range*/
-    if(y >= total_len || x >= board[y].len)
+    if(y >= total_len || x >= board[y].len || y < 0 || x < 0)
         return false;
-    else if(axis == AXIS_X && x + vsense >= board[y].len)
+    else if(axis == AXIS_X && (x + vsense >= board[y].len || x + vsense < 0))
         return false;
-    else if(axis == AXIS_Y && y + vsense >= total_len)
+    else if(axis == AXIS_Y && (y + vsense >= total_len || y + vsense < 0) )
         return false;
 
     /* Check if tile is already empty */
@@ -136,13 +136,32 @@ bool move(struct Board board[], int total_len, int x, int y, bool axis, bool sen
     return true;
 }
 
-bool undo(struct Board board[], int total_len, int x, int y, bool axis, bool sense){
+bool undo(struct Board board[], int x, int y, bool axis, bool sense, bool save_middle){
+    short invy = (axis == AXIS_Y) ? -1 : 1;
+    short vsense = (sense == FORWARD? 2 : -2)  * invy;
+    short vbefore = (sense == FORWARD ? 1 : -1) * invy;
 
+    int offset = 0;
+    if(axis == AXIS_Y)
+        offset = board[y].offset - board[y + vsense].offset;
+
+    if(axis == AXIS_X){
+        board[y].row[x + vsense] = IS_EMPTY;
+        board[y].row[x] = NOT_EMPTY;
+        board[y].row[x + vbefore] = save_middle;
+    }
+    else{
+        board[y + vsense].row[x + offset] = IS_EMPTY;
+        board[y].row[x] = NOT_EMPTY;
+        board[y + vbefore].row[x + offset] = save_middle;
+    }
 }
 
+int translate(struct Board row1, struct Board row2){
+    return row1.offset - row2.offset;
+}
 
 /* Backtracking function */
-
 bool solve(struct Board board[], int len, char *draw, FILE *log){
     for(int i = 0; i < len; i++){
         for(int j = 0; j < board[i].len; j++){
@@ -152,21 +171,20 @@ bool solve(struct Board board[], int len, char *draw, FILE *log){
             save_state = board[i].row[j + 1];
             if(move(board, len, i, j, AXIS_X, FORWARD)){
                 // call recursive
-                move(board, len, i, j + 2, AXIS_X, BACKWARD);
-                board[i][j + 1] = save_state;
+                undo(board, i, j, AXIS_X, FORWARD, save_state);
             }
-            save_state = board[i][j - 1];
+            save_state = board[i].row[j - 1];
             if(move(board, len, i, j, AXIS_X, BACKWARD)){
-
+                undo(board, i, j, AXIS_X, BACKWARD, save_state);
             }
 
-            save_state = board[i + 1][j];
+            save_state = board[i + 1 + translate(board[i], board[i + 1])].row[j];
             if(move(board, len, i, j, AXIS_Y, FORWARD)){
-
+                undo(board, i, j, AXIS_X, FORWARD, save_state);
             }
-            save_state = board[i - 1][j];
+            save_state = board[i - 1 + translate(board[i], board[i - 1])].row[j];
             if(move(board, len, i, j, AXIS_Y, BACKWARD)){
-
+                undo(board, i, j, AXIS_Y, BACKWARD, save_state);
             }
 
             dprint(draw_board(board, len, draw), log);

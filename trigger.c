@@ -30,13 +30,8 @@ int main(){
 
     char *draw = (char *) malloc(calc_draw(DIMENSIONS));
 
-    //solve(board, DIMENSIONS, draw, log);
+    solve(board, DIMENSIONS, draw, log);
 
-    for(int i = 0; i < DIMENSIONS; i++)
-        for(int j = 0; j < board[i].len; j++)
-            board[i].row[j] = !board[i].row[j];
-
-    bool m = move(board, DIMENSIONS, 3, 3, AXIS_X, FORWARD);
 
     
 
