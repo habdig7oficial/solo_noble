@@ -4,6 +4,10 @@
 
 #include "utils.h"
 
+/* 
+    Felipe Mendonça Garbelotti - 10723734
+    Mateus Felipe da Silveira Vieira - 10723904
+*/
 
 int main(){
     /* Prepare Board Initial State */
@@ -30,7 +34,7 @@ int main(){
 
     char *draw = (char *) malloc(calc_draw(DIMENSIONS));
 
-    solve(board, DIMENSIONS, draw, log);
+    solve(board, DIMENSIONS, 31, draw, log);
 
 
     

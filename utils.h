@@ -13,6 +13,11 @@
 #define IS_EMPTY true
 #define NOT_EMPTY false
 
+/* 
+    Felipe Mendonça Garbelotti - 10723734
+    Mateus Felipe da Silveira Vieira - 10723904
+*/
+
 /* Make Board */
 struct Board {
     bool *row;
@@ -162,28 +167,60 @@ int translate(struct Board row1, struct Board row2){
 }
 
 /* Backtracking function */
-bool solve(struct Board board[], int len, char *draw, FILE *log){
+bool solve(struct Board board[], int len, int moves_left, char *draw, FILE *log){
+    if(moves_left == 0){
+        short peg = 0;
+        for(int i = 0; i < len; i++){
+            for(int j = 0; j < board[i].len; j++){
+                if(peg > 1){
+                    dprint("\n\n========================== NO MOVES LEFT ==========================\n", log);
+                    return false;
+                }
+                else if(board[i].row[j] == NOT_EMPTY)
+                    peg++;
+            }
+        }
+            
+            
+
+        return board[len / 2].row[len / 2] == NOT_EMPTY;
+    }
+
     for(int i = 0; i < len; i++){
         for(int j = 0; j < board[i].len; j++){
             bool res;
             bool save_state; 
             
-            save_state = board[i].row[j + 1];
+            if(j + 1 < len)
+                save_state = board[i].row[j + 1];
             if(move(board, len, i, j, AXIS_X, FORWARD)){
-                // call recursive
+                // recursion if true return
+                if(solve(board, len, moves_left - 1, draw, log))
+                    return true;
                 undo(board, i, j, AXIS_X, FORWARD, save_state);
             }
-            save_state = board[i].row[j - 1];
+
+            if(j + 1 < len)
+                save_state = board[i].row[j - 1];
             if(move(board, len, i, j, AXIS_X, BACKWARD)){
+                if(solve(board, len, moves_left - 1, draw, log))
+                    return true;
                 undo(board, i, j, AXIS_X, BACKWARD, save_state);
             }
 
-            save_state = board[i + 1 + translate(board[i], board[i + 1])].row[j];
+            if(j + 1 < len)
+                save_state = board[i + 1 + translate(board[i], board[i + 1])].row[j];
             if(move(board, len, i, j, AXIS_Y, FORWARD)){
+                if(solve(board, len, moves_left - 1, draw, log))
+                    return true;
                 undo(board, i, j, AXIS_X, FORWARD, save_state);
             }
-            save_state = board[i - 1 + translate(board[i], board[i - 1])].row[j];
+
+            if(j + 1 < len)
+                save_state = board[i - 1 + translate(board[i], board[i - 1])].row[j];
             if(move(board, len, i, j, AXIS_Y, BACKWARD)){
+                if(solve(board, len, moves_left - 1, draw, log))
+                    return true;
                 undo(board, i, j, AXIS_Y, BACKWARD, save_state);
             }
 
@@ -191,4 +228,5 @@ bool solve(struct Board board[], int len, char *draw, FILE *log){
             dprint("\n:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n\n", log);
         }
     }
+    return false;
 }
